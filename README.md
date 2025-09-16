@@ -28,23 +28,198 @@ Take screenshots of the waveform window and include them in your lab report to d
 You can include the timing diagram from the simulation window showing the correct functionality of the Seven Segment across different select inputs and data inputs. 
 Close the Simulation Once done, by going to Simulation → "Close Simulation
 
-Input/Output Signal Diagram:
+***Input/Output Signal Diagram:***
 
-D FF
+***D Flip Flop***
 
-SR FF
+<img width="495" height="246" alt="image" src="https://github.com/user-attachments/assets/a870e780-d46f-48ca-8321-d73a10e89acd" />
 
-JK FF
+***SR Flip Flop***
 
-T FF
+<img width="485" height="290" alt="image" src="https://github.com/user-attachments/assets/fe9aa70a-2a4a-4b7b-b171-79ad0689dfdd" />
+
+***JK Flip Flop***
+
+<img width="453" height="283" alt="image" src="https://github.com/user-attachments/assets/dec9c5d2-cfa5-41ec-a92c-355cb944dcab" />
+
+***T Flip Flop***
+
+<img width="483" height="270" alt="image" src="https://github.com/user-attachments/assets/f4fa2c9a-db72-4b47-928f-8690e39a65d9" />
 
 
-RTL Code:
+***RTL Code:***
 
-TestBench:
+***D Flip flop***
+```
+module dff ( clk, rst,d, q);
+input clk,rst,d;
+output reg q;
+    always @(posedge clk) begin
+        if (rst)   
+            q <= 1'b0;
+        else
+            q <= d;  
+    end
+endmodule
+```
 
-Output waveform:
+***SR Flip Flop***
+```
+module sr_ff (input clk,input S,input R,output reg Q);
+always @(posedge clk)
+ begin
+    case ({S,R})
+      2'b00: Q <= Q;    
+      2'b01: Q <= 0;    
+      2'b10: Q <= 1;    
+      2'b11: Q <= 1'bx; 
+ endcase
+ end
+endmodule
+```
 
-Conclusion:
+***JK Flip Flop***
+```
+module jk_ff(input clk,J,K, output reg Q);
+always @(posedge clk) begin
+case({J,K})
+2'b00: Q<=Q;
+2'b01: Q<=0;
+2'b10: Q<=1;
+2'b11: Q<=~Q;
+endcase
+end
+endmodule
+```
+
+***T Flip Flop***
+```
+module t_ff(clk,rst,Tout,T);
+    input clk,rst,T;
+    output reg Tout;
+    always@ (posedge clk)
+     begin
+     if(rst)
+        Tout = 1'b0;
+     else if(T)
+        Tout = ~Tout;
+     else
+        Tout = Tout;
+     end
+endmodule
+```
+
+***TestBench:***
+
+***D Flip flop***
+```
+module dff_tb;
+    reg clk_t, rst_t, d_t;
+    wire q_t;
+    dff dut (.clk(clk_t),.rst(rst_t),.d(d_t),.q(q_t) );
+    initial begin
+        clk_t = 1'b0;
+        rst_t = 1'b1;  
+        d_t   = 1'b0;
+        #100 rst_t = 1'b0; 
+        #100 d_t = 1'b1;
+        #100 d_t = 1'b0;
+        #100 d_t = 1'b1;
+end
+     always #10 clk_t = ~clk_t;
+endmodule
+```
+***SR Flip Flop***
+```
+module sr_ff_tb;
+  reg clk, S, R;
+  wire Q;
+  sr_ff uut (.clk(clk),.S(S),.R(R),.Q(Q));
+  initial begin
+   clk = 0;
+  forever #10 clk = ~clk; 
+  end
+  initial begin
+    S = 0; R = 0;
+    #100 S = 1; R = 0;   
+    #100 S = 0; R = 0;   
+    #100 S = 0; R = 1;   
+    #100 S = 1; R = 1;  
+    #100 S = 0; R = 0;
+ end
+endmodule
+```
+
+***JK Flip Flop***
+```
+module tb_jk_ff;
+  reg clk;
+  reg J, K;
+  wire Q;
+  jk_ff uut (.clk(clk),.J(J),.K(K),.Q(Q));
+initial begin
+clk=0;
+forever #20 clk=~clk;
+end
+initial begin
+ J = 0; K = 0;
+    #100 J=0; K=0;  
+    #100 J=0; K=1; 
+    #100 J=1; K=0;  
+    #100 J=1; K=1;  
+    #100 J=0; K=1; 
+    #100 J=1; K=0;  
+    #100 J=1; K=1;  
+end
+endmodule
+```
+
+***T Flip Flop***
+```
+module t_ff_tb;
+  reg clk, rst, T;
+  wire Tout;
+  t_ff uut (.clk(clk),.rst(rst),.T(T),.Tout(Tout));
+  initial begin
+    clk = 0;
+    forever #10 clk = ~clk;  
+  end
+  initial begin
+    
+    rst = 1; T = 0;
+    #20 rst = 0;    
+    #20 T = 1;      
+    #20 T = 0;      
+    #20 T = 1;      
+    #20 T = 1;      
+    #20 T = 0;
+  end
+
+endmodule
+```
+
+***Output waveform:***
+
+***D Flip flop***
+
+<img width="862" height="510" alt="Screenshot 2025-09-16 201905" src="https://github.com/user-attachments/assets/4cd27540-746b-4367-8c2c-dcfd1e6528d4" />
+
+
+***SR Flip Flop***
+
+<img width="866" height="530" alt="Screenshot 2025-09-16 202236" src="https://github.com/user-attachments/assets/c4e6f52b-f68c-47e6-9f68-d0ba92ebaafa" />
+
+
+***JK Flip Flop***
+
+<img width="873" height="535" alt="Screenshot 2025-09-16 202346" src="https://github.com/user-attachments/assets/73674d6a-1335-47e1-b4d0-d29ef96761fd" />
+
+
+***T Flip Flop***
+
+<img width="882" height="541" alt="Screenshot 2025-09-16 202435" src="https://github.com/user-attachments/assets/d67923d1-674e-4376-948f-be2d7878305b" />
+
+
+***Conclusion:***
 
 
